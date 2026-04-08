@@ -8,7 +8,7 @@ import numpy as np
 import torch
 import torch.optim as optim
 
-from agents.policy_net import PolicyNetwork
+from agents.policy_net_mapobs import PolicyNetworkMapObs
 
 
 class StandardBC:
@@ -27,7 +27,7 @@ class StandardBC:
        In iterative mode the caller controls the training loop.
     """
 
-    def __init__(self, policy: PolicyNetwork, eta: float = 0.01,
+    def __init__(self, policy: PolicyNetworkMapObs, eta: float = 0.01,
                  seed: int = 0):
         """
         Parameters
