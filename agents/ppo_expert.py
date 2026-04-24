@@ -377,10 +377,10 @@ def collect_rollout(env, policy: CNNPolicy,
         log_p   = dist.log_prob(actions)
 
         actions_np = actions.cpu().numpy()
-        next_data  = env.step(actions_np)
-        next_obs   = next_data['rgb']
-        rewards    = next_data['reward']
-        dones      = next_data['done']
+        next_obs_dict, rewards, dones, _ = env.step(actions_np)
+        next_obs   = next_obs_dict['rgb']
+        # rewards already set
+        # dones already set
 
         obs_list.append(obs.copy())
         action_list.append(actions_np)

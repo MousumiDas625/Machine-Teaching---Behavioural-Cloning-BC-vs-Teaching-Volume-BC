@@ -64,7 +64,7 @@ os.makedirs("results/data",  exist_ok=True)
 def load_expert(path=EXPERT_PATH):
     policy = CNNPolicy(n_actions=N_ACTIONS).to(DEVICE)
     policy.load_state_dict(
-        torch.load(path, map_location=DEVICE))
+        torch.load(path, map_location=DEVICE, weights_only=True))
     policy.eval()
     return policy
 
@@ -565,6 +565,10 @@ def run():
     plt.tight_layout()
     plt.savefig("results/plots/maze_generalisation_curves.png", dpi=150)
     plt.close()
+    torch.save(bc_policy.state_dict(), 'results/data/bc_policy_maze.pt')
+    torch.save(tvbc_policy.state_dict(), 'results/data/tvbc_policy_maze.pt')
+    print('  Policies saved.')
+    print(f'  Plot: results/plots/maze_generalisation_curves.png')
     print(f"  Plot: results/plots/maze_generalisation_curves.png")
 
 

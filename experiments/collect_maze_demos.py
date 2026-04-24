@@ -36,7 +36,7 @@ os.makedirs("results/data", exist_ok=True)
 def load_expert(path: str) -> CNNPolicy:
     policy = CNNPolicy(n_actions=15).to(DEVICE)
     policy.load_state_dict(
-        torch.load(path, map_location=DEVICE))
+        torch.load(path, map_location=DEVICE, weights_only=True))
     policy.eval()
     print(f"  Expert loaded from {path}")
     return policy

@@ -1,0 +1,33 @@
+==========================================
+SLURM_JOB_ID = 3298375
+SLURM_JOB_NODELIST = c05-02
+TMPDIR = /tmp/SLURM_3298375
+==========================================
+/var/spool/slurm/d/job3298375/slurm_script: line 15: conda: command not found
+/var/spool/slurm/d/job3298375/slurm_script: line 16: conda: command not found
+Traceback (most recent call last):
+  File "/project2/biyik_1165/mousumid/LIRA/machine/experiments/train_expert.py", line 17, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+======================================
+Starting Step 2: Collecting Demonstrations
+======================================
+Traceback (most recent call last):
+  File "/project2/biyik_1165/mousumid/LIRA/machine/experiments/collect_maze_demos.py", line 16, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+======================================
+Starting Step 3: Running Generalisation Experiment
+======================================
+Traceback (most recent call last):
+  File "/project2/biyik_1165/mousumid/LIRA/machine/experiments/run_maze_generalisation.py", line 23, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+======================================
+Starting Step 6: Recording Videos
+======================================
+Traceback (most recent call last):
+  File "/project2/biyik_1165/mousumid/LIRA/machine/experiments/record_videos.py", line 16, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+PIPELINE COMPLETE!
