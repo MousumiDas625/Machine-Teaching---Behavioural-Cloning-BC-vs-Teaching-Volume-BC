@@ -13,6 +13,8 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..")))
+import warnings
+warnings.filterwarnings("ignore")
 
 import numpy as np
 import torch
@@ -82,10 +84,10 @@ def evaluate_expert(policy, n_episodes=50, seed=1000):
             probs, _ = policy.forward(obs_t)
         action = int(torch.argmax(probs, dim=-1).item())
 
-        result   = eval_env.step(np.array([action]))
-        obs      = result['rgb']
-        reward   = float(result['reward'][0])
-        done     = bool(result['done'][0])
+        obs_dict, reward_arr, done_arr, _ = eval_env.step(np.array([action]))
+        obs = obs_dict['rgb']
+        reward = float(reward_arr[0])
+        done = bool(done_arr[0])
         ep_reward += reward
 
         if done:

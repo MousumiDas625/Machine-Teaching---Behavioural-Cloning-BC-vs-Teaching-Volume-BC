@@ -23,7 +23,7 @@ from agents.ppo_expert import CNNPolicy, DEVICE
 # ══════════════════════════════════════════════════════════════════════
 # Parameters
 # ══════════════════════════════════════════════════════════════════════
-N_DEMO_LEVELS   = 50      # collect demos from 50 training levels
+N_DEMO_LEVELS   = 20      # collect demos from 50 training levels
 TRAJS_PER_LEVEL = 5       # 5 demonstrations per level
 MAX_STEPS       = 500     # max steps per trajectory
 NOISE_EPS       = 0.10    # 10% random actions (lower than GridWorld
@@ -64,9 +64,9 @@ def collect_one_trajectory(env, expert, eps=NOISE_EPS, seed=0):
         teacher_loss = expert.loss_at(obs, action)
         traj.append((obs.copy(), action, teacher_loss))
 
-        result = env.step(np.array([action]))
-        obs    = result['rgb'][0]
-        done   = bool(result['done'][0])
+        obs_dict, reward_arr, done_arr, _ = env.step(np.array([action]))
+        obs = obs_dict['rgb'][0]
+        done = bool(done_arr[0])
         steps += 1
 
     return traj

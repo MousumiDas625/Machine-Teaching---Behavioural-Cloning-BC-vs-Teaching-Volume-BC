@@ -4,3 +4,4 @@ __pycache__/
 .env
 .claude/
 ._.claude
+results/data/maze_demos.pkl

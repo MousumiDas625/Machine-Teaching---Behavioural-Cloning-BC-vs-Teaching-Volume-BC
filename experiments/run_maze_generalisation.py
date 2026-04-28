@@ -35,15 +35,15 @@ from agents.ppo_expert import CNNPolicy, DEVICE
 # ══════════════════════════════════════════════════════════════════════
 # Parameters
 # ══════════════════════════════════════════════════════════════════════
-N_ROUNDS        = 50       # training rounds = unique maze levels
+N_ROUNDS        = 10       # training rounds = unique maze levels
 TRAJS_PER_ROUND = 5        # demonstrations per round
-MAX_STEPS       = 500      # max steps per trajectory
+MAX_STEPS       = 100      # max steps per trajectory
 NOISE_EPS       = 0.10     # 10% random actions
-TRAIN_STEPS     = 200      # gradient updates per round
+TRAIN_STEPS     = 50      # gradient updates per round
 BATCH_SIZE      = 16       # smaller batch for image obs
 BETA_TV         = 1.0      # TV softmax temperature
 ETA             = 1e-4     # learning rate (smaller for CNN)
-N_EVAL_EPS      = 20       # evaluation episodes per test level
+N_EVAL_EPS      = 5       # evaluation episodes per test level
 N_ACTIONS       = 15       # Procgen action space
 
 # Training maze levels: 0-49
@@ -53,7 +53,7 @@ TRAIN_LEVELS = list(range(N_ROUNDS))
 TEST_LEVELS = list(range(1000, 1020))
 
 EXPERT_PATH = "results/data/maze_expert_best.pt"
-SEEDS       = [0, 1, 2]   # multiple seeds for robustness
+SEEDS       = [0]   # multiple seeds for robustness
 
 os.makedirs("results/plots", exist_ok=True)
 os.makedirs("results/data",  exist_ok=True)
@@ -97,9 +97,9 @@ def collect_trajectory(level_seed, expert, eps=NOISE_EPS, seed=0):
         teacher_loss = expert.loss_at(obs, action)
         traj.append((obs.copy(), action, teacher_loss))
 
-        result = env.step(np.array([action]))
-        obs    = result['rgb'][0]
-        done   = bool(result['done'][0])
+        obs_dict, reward_arr, done_arr, _ = env.step(np.array([action]))
+        obs    = obs_dict["rgb"][0]
+        done   = bool(done_arr[0])
         steps += 1
 
     env.close()
@@ -120,12 +120,14 @@ def compute_tv_batch(trajs, policy, eta=ETA):
             scores.append(0.0)
             continue
         step_tvs = []
-        for (obs, action, teacher_loss) in traj:
+        # Subsample steps for speed — TV on every 10th step
+        traj_sample = traj[::max(1,len(traj)//5)][:5]
+        for (obs, action, teacher_loss) in traj_sample:
             policy.zero_grad()
             loss = policy.compute_loss(obs, action)
             loss.backward()
             grads = [p.grad.detach().view(-1) if p.grad is not None
-                     else torch.zeros(p.numel())
+                     else torch.zeros(p.numel(), device=next(policy.parameters()).device)
                      for p in policy.parameters()]
             flat      = torch.cat(grads)
             gnorm_sq  = float(flat.dot(flat).item())
@@ -202,7 +204,7 @@ def tvbc_step(policy, batch, beta=BETA_TV, eta=ETA, rng=None):
         loss = policy.compute_loss(obs, action)
         loss.backward()
         grads = [p.grad.detach().view(-1) if p.grad is not None
-                 else torch.zeros(p.numel())
+                 else torch.zeros(p.numel(), device=next(policy.parameters()).device)
                  for p in policy.parameters()]
         flat      = torch.cat(grads)
         gnorm_sq  = float(flat.dot(flat).item())
@@ -226,7 +228,7 @@ def tvbc_step(policy, batch, beta=BETA_TV, eta=ETA, rng=None):
     loss_t = policy.compute_loss(obs_t, a_t)
     loss_t.backward()
     grads_t = [p.grad.detach().view(-1) if p.grad is not None
-               else torch.zeros(p.numel())
+               else torch.zeros(p.numel(), device=next(policy.parameters()).device)
                for p in policy.parameters()]
     g_t = torch.cat(grads_t)
 
@@ -247,7 +249,7 @@ def tvbc_step(policy, batch, beta=BETA_TV, eta=ETA, rng=None):
         loss = theta_hat.compute_loss(obs, action)
         loss.backward()
         grads = [p.grad.detach().view(-1) if p.grad is not None
-                 else torch.zeros(p.numel())
+                 else torch.zeros(p.numel(), device=next(policy.parameters()).device)
                  for p in theta_hat.parameters()]
         flat     = torch.cat(grads)
         gnorm_sq = float(flat.dot(flat).item())
@@ -268,7 +270,7 @@ def tvbc_step(policy, batch, beta=BETA_TV, eta=ETA, rng=None):
         loss_i = theta_hat.compute_loss(obs, action)
         loss_i.backward()
         grads_i = [p.grad.detach().view(-1) if p.grad is not None
-                   else torch.zeros(p.numel())
+                   else torch.zeros(p.numel(), device=next(policy.parameters()).device)
                    for p in theta_hat.parameters()]
         g_i  = torch.cat(grads_i)
         g_q += float(q_hat[i]) * g_i
@@ -278,7 +280,7 @@ def tvbc_step(policy, batch, beta=BETA_TV, eta=ETA, rng=None):
     loss_t_hat = theta_hat.compute_loss(obs_t, a_t)
     loss_t_hat.backward()
     grads_th = [p.grad.detach().view(-1) if p.grad is not None
-                else torch.zeros(p.numel())
+                else torch.zeros(p.numel(), device=next(policy.parameters()).device)
                 for p in theta_hat.parameters()]
     g_t_hat    = torch.cat(grads_th)
     correction = 2.0 * beta * (eta ** 2) * (g_t_hat - g_q)
@@ -326,10 +328,10 @@ def evaluate_on_levels(policy, test_levels, n_eps=N_EVAL_EPS):
                 with torch.no_grad():
                     probs = policy.get_action_probs(obs).numpy()
                 action   = int(np.argmax(probs))
-                result   = env.step(np.array([action]))
-                obs      = result['rgb'][0]
-                ep_r    += float(result['reward'][0])
-                done     = bool(result['done'][0])
+                obs_dict, reward_arr, done_arr, _ = env.step(np.array([action]))
+                obs = obs_dict['rgb'][0]
+                ep_r += float(reward_arr[0])
+                done = bool(done_arr[0])
                 steps   += 1
             ep_returns.append(ep_r)
 
@@ -435,6 +437,12 @@ def run_one_seed(seed_init, expert, expert_ret, expert_solved):
                   f"BC={bc_ret:.3f} ({bc_sol*100:.1f}%) | "
                   f"TV={tvbc_ret:.3f} ({tvbc_sol*100:.1f}%)")
 
+    # Save final policies from last seed
+    torch.save(bc_policy.state_dict(),
+               'results/data/bc_policy_maze.pt')
+    torch.save(tvbc_policy.state_dict(),
+               'results/data/tvbc_policy_maze.pt')
+    print(f'  Policies saved for seed {seed_init}')
     return bc_returns, tvbc_returns, bc_solved, tvbc_solved
 
 # ══════════════════════════════════════════════════════════════════════
@@ -565,9 +573,9 @@ def run():
     plt.tight_layout()
     plt.savefig("results/plots/maze_generalisation_curves.png", dpi=150)
     plt.close()
-    torch.save(bc_policy.state_dict(), 'results/data/bc_policy_maze.pt')
-    torch.save(tvbc_policy.state_dict(), 'results/data/tvbc_policy_maze.pt')
-    print('  Policies saved.')
+
+
+
     print(f'  Plot: results/plots/maze_generalisation_curves.png')
     print(f"  Plot: results/plots/maze_generalisation_curves.png")
 

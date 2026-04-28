@@ -3,8 +3,6 @@ Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst othe
 Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
 Users of this version of Gym should be able to simply replace 'import gym' with 'import gymnasium as gym' in the vast majority of cases.
 See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
-/project2/biyik_1165/mousumid/LIRA/machine/experiments/run_maze_generalisation.py:67: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
-  torch.load(path, map_location=DEVICE))
 ============================================================
   Procgen Maze — TV-BC vs BC Generalisation
 ============================================================
@@ -14,20 +12,13 @@ See the migration guide at https://gymnasium.farama.org/introduction/migration_g
   Seeds:           [0, 1, 2]
   Noise:           0.1
   Beta:            1.0
-  Device:          cpu
+  Device:          cuda
 
   Loading expert from results/data/maze_expert_best.pt...
-Traceback (most recent call last):
-  File "/project2/biyik_1165/mousumid/LIRA/machine/experiments/run_maze_generalisation.py", line 572, in <module>
-    run()
-  File "/project2/biyik_1165/mousumid/LIRA/machine/experiments/run_maze_generalisation.py", line 457, in run
-    expert = load_expert(EXPERT_PATH)
-  File "/project2/biyik_1165/mousumid/LIRA/machine/experiments/run_maze_generalisation.py", line 67, in load_expert
-    torch.load(path, map_location=DEVICE))
-  File "/scratch1/mousumid/miniconda3/envs/machine_teaching/lib/python3.10/site-packages/torch/serialization.py", line 1319, in load
-    with _open_file_like(f, "rb") as opened_file:
-  File "/scratch1/mousumid/miniconda3/envs/machine_teaching/lib/python3.10/site-packages/torch/serialization.py", line 659, in _open_file_like
-    return _open_file(name_or_buffer, mode)
-  File "/scratch1/mousumid/miniconda3/envs/machine_teaching/lib/python3.10/site-packages/torch/serialization.py", line 640, in __init__
-    super().__init__(open(name, mode))
-FileNotFoundError: [Errno 2] No such file or directory: 'results/data/maze_expert_best.pt'
+  Expert params: 373,296
+  Evaluating expert on test levels...
+  Expert test return: 0.500  solve rate: 5.0%
+
+  ───────────────────────────────────────────────────────
+  Seed 0
+  ───────────────────────────────────────────────────────

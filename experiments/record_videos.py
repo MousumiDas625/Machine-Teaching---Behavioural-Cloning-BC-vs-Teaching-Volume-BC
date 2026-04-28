@@ -37,7 +37,7 @@ TEST_LEVELS  = [1000, 1001, 1002]
 def load_policy(path, n_actions=N_ACTIONS):
     policy = CNNPolicy(n_actions=n_actions).to(DEVICE)
     policy.load_state_dict(
-        torch.load(path, map_location=DEVICE))
+        torch.load(path, map_location=DEVICE, weights_only=True))
     policy.eval()
     return policy
 
@@ -74,10 +74,10 @@ def record_episode(policy, level_seed, label,
                 probs  = policy.get_action_probs(obs).numpy()
             action = int(np.argmax(probs))
 
-        result   = env.step(np.array([action]))
-        obs      = result['rgb'][0]
-        total_r += float(result['reward'][0])
-        done     = bool(result['done'][0])
+        obs_dict, reward_arr, done_arr, _ = env.step(np.array([action]))
+        obs      = obs_dict['rgb'][0]
+        total_r += float(reward_arr[0])
+        done     = bool(done_arr[0])
         frames.append(obs.copy())
         steps   += 1
 
