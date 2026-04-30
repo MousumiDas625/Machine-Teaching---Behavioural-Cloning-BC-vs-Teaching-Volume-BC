@@ -1,0 +1,31 @@
+==========================================
+SLURM_JOB_ID = 3372470
+SLURM_JOB_NODELIST = c06-02
+TMPDIR = /tmp/SLURM_3372470
+==========================================
+===== maze_easy STARTED: Tue Apr 28 14:30:27 PDT 2026 =====
+Node: c06-02
+/var/spool/slurm/d/job3372470/slurm_script: line 15: conda: command not found
+/var/spool/slurm/d/job3372470/slurm_script: line 16: conda: command not found
+
+============================================================
+  GAME: MAZE_EASY
+  Results dir: results/maze_easy
+============================================================
+
+Step 1: Training expert for maze_easy...
+Traceback (most recent call last):
+  File "/tmp/patched_maze_easy_train_expert.py", line 19, in <module>
+    import numpy as np
+ModuleNotFoundError: No module named 'numpy'
+Traceback (most recent call last):
+  File "/project2/biyik_1165/mousumid/LIRA/machine/run_game_pipeline.py", line 76, in <module>
+    main()
+  File "/project2/biyik_1165/mousumid/LIRA/machine/run_game_pipeline.py", line 54, in main
+    patch_and_run('experiments/train_expert.py',
+  File "/project2/biyik_1165/mousumid/LIRA/machine/run_game_pipeline.py", line 14, in patch_and_run
+    subprocess.run([sys.executable, '-u', tmp], check=True)
+  File "/apps/spack/2406/apps/linux-rocky8-x86_64_v3/gcc-13.3.0/python-3.11.9-x74mtjf/lib/python3.11/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/apps/spack/2406/apps/linux-rocky8-x86_64_v3/gcc-13.3.0/python-3.11.9-x74mtjf/bin/python3', '-u', '/tmp/patched_maze_easy_train_expert.py']' returned non-zero exit status 1.
+===== maze_easy COMPLETE: Tue Apr 28 14:30:27 PDT 2026 =====

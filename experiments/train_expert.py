@@ -26,12 +26,12 @@ from agents.ppo_expert import CNNPolicy, PPOTrainer, collect_rollout, DEVICE
 # ══════════════════════════════════════════════════════════════════════
 # Training parameters
 # ══════════════════════════════════════════════════════════════════════
-N_ENVS          = 64       # parallel environments
+N_ENVS          = 32       # parallel environments
 N_STEPS         = 256      # steps per rollout per env
-TOTAL_TIMESTEPS = 5_000_000  # total env steps
+TOTAL_TIMESTEPS = 25_000_000  # total env steps
 N_EPOCHS        = 4
 MINIBATCH_SIZE  = 512
-LR              = 5e-4
+LR              = 2.5e-4
 GAMMA           = 0.999
 GAE_LAMBDA      = 0.95
 CLIP_EPS        = 0.2

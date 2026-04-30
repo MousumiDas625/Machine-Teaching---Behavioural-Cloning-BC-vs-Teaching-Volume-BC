@@ -35,15 +35,15 @@ from agents.ppo_expert import CNNPolicy, DEVICE
 # ══════════════════════════════════════════════════════════════════════
 # Parameters
 # ══════════════════════════════════════════════════════════════════════
-N_ROUNDS        = 10       # training rounds = unique maze levels
+N_ROUNDS        = 50       # training rounds = unique maze levels
 TRAJS_PER_ROUND = 5        # demonstrations per round
-MAX_STEPS       = 100      # max steps per trajectory
+MAX_STEPS       = 300      # max steps per trajectory
 NOISE_EPS       = 0.10     # 10% random actions
-TRAIN_STEPS     = 50      # gradient updates per round
+TRAIN_STEPS     = 200      # gradient updates per round
 BATCH_SIZE      = 16       # smaller batch for image obs
 BETA_TV         = 1.0      # TV softmax temperature
 ETA             = 1e-4     # learning rate (smaller for CNN)
-N_EVAL_EPS      = 5       # evaluation episodes per test level
+N_EVAL_EPS      = 20       # evaluation episodes per test level
 N_ACTIONS       = 15       # Procgen action space
 
 # Training maze levels: 0-49

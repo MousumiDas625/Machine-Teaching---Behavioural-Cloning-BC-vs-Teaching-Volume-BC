@@ -1,0 +1,33 @@
+==========================================
+SLURM_JOB_ID = 3372690
+SLURM_JOB_NODELIST = c06-02
+TMPDIR = /tmp/SLURM_3372690
+==========================================
+===== heist STARTED: Tue Apr 28 14:42:27 PDT 2026 =====
+Node: c06-02
+
+============================================================
+  GAME: HEIST
+  Results dir: results/heist
+============================================================
+
+Step 1: Training expert for heist...
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+Users of this version of Gym should be able to simply replace 'import gym' with 'import gymnasium as gym' in the vast majority of cases.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+Traceback (most recent call last):
+  File "/tmp/patched_heist_train_expert.py", line 24, in <module>
+    from agents.ppo_expert import CNNPolicy, PPOTrainer, collect_rollout, DEVICE
+ModuleNotFoundError: No module named 'agents'
+Traceback (most recent call last):
+  File "/project2/biyik_1165/mousumid/LIRA/machine/run_game_pipeline.py", line 76, in <module>
+    main()
+  File "/project2/biyik_1165/mousumid/LIRA/machine/run_game_pipeline.py", line 54, in main
+    patch_and_run('experiments/train_expert.py',
+  File "/project2/biyik_1165/mousumid/LIRA/machine/run_game_pipeline.py", line 14, in patch_and_run
+    subprocess.run(['/scratch1/mousumid/miniconda3/envs/machine_teaching/bin/python3', '-u', tmp], check=True)
+  File "/scratch1/mousumid/miniconda3/envs/machine_teaching/lib/python3.10/subprocess.py", line 526, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/scratch1/mousumid/miniconda3/envs/machine_teaching/bin/python3', '-u', '/tmp/patched_heist_train_expert.py']' returned non-zero exit status 1.
+===== heist COMPLETE: Tue Apr 28 14:42:31 PDT 2026 =====
