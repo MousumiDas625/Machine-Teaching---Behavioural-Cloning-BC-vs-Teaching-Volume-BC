@@ -16,7 +16,7 @@ import torch
 import pickle
 import procgen
 
-from agents.ppo_expert import CNNPolicy, DEVICE
+from agents.pavel_policy import load_pavel_expert, DEVICE
 
 GAME        = 'coinrun'
 FIXED_LEVEL = 10
@@ -24,19 +24,13 @@ N_TRAJS     = 50       # 50 demonstrations from level 10
 MAX_STEPS   = 500
 NOISE_EPS   = 0.05     # 5% noise — expert mostly optimal
 
-EXPERT_PATH = "results/coinrun/data/coinrun_expert_best.pt"
+EXPERT_PATH = "/scr/pavel/data/goal-misgen/policy/icml/coinrun/icml2_coinrun_exp0_0p/2026-01-13__06-46-28__seed_6033/model_200015872.pth"
 SAVE_DIR    = "results/coinrun/data"
 os.makedirs(SAVE_DIR, exist_ok=True)
 
 
 def load_expert():
-    policy = CNNPolicy(n_actions=15).to(DEVICE)
-    policy.load_state_dict(
-        torch.load(EXPERT_PATH, map_location=DEVICE,
-                   weights_only=True))
-    policy.eval()
-    print(f"  Expert loaded from {EXPERT_PATH}")
-    return policy
+    return load_pavel_expert(EXPERT_PATH)
 
 
 def collect_one_traj(expert, seed=0):

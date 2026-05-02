@@ -28,6 +28,7 @@ import matplotlib.pyplot as plt
 import procgen
 
 from agents.ppo_expert import CNNPolicy, DEVICE
+from agents.pavel_policy import load_pavel_expert, PavelPolicy
 
 # ── Parameters ────────────────────────────────────────────────────────
 GAME        = 'coinrun'
@@ -50,7 +51,7 @@ TRAIN_LEVEL = 10
 # Test on levels 11-30 — never seen during training
 TEST_LEVELS = list(range(11, 31))
 
-EXPERT_PATH = "results/coinrun/data/coinrun_expert_best.pt"
+EXPERT_PATH = "/scr/pavel/data/goal-misgen/policy/icml/coinrun/icml2_coinrun_exp0_0p/2026-01-13__06-46-28__seed_6033/model_200015872.pth"
 SAVE_DIR    = "results/coinrun/data"
 PLOT_DIR    = "results/coinrun/plots"
 VIDEO_DIR   = "results/coinrun/videos"
@@ -61,12 +62,7 @@ os.makedirs(VIDEO_DIR, exist_ok=True)
 
 
 def load_expert():
-    policy = CNNPolicy(n_actions=N_ACTIONS).to(DEVICE)
-    policy.load_state_dict(
-        torch.load(EXPERT_PATH, map_location=DEVICE,
-                   weights_only=True))
-    policy.eval()
-    return policy
+    return load_pavel_expert(EXPERT_PATH)
 
 
 def collect_trajectory(expert, seed=0):
